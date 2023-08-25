@@ -55,16 +55,13 @@ class LLM(BaseModel, abc.ABC):
     model: str
     api_key: str | None
 
-    class Config:
-        abstract = True
-
     @abc.abstractmethod
     def create(self, **kwargs) -> Completion:
-        pass
+        pass  # pragma: no cover
 
     @abc.abstractmethod
     async def acreate(self, **kwargs):
-        pass
+        pass  # pragma: no cover
 
 
 class OpenAIChat(LLM):
