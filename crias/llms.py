@@ -3,6 +3,8 @@ import abc
 import openai
 from pydantic import BaseModel
 
+from .prompts import Template
+
 
 class FunctionCall(BaseModel):
     name: str
@@ -21,13 +23,50 @@ class Message(BaseModel):
     name: str | None = None
     function_call: FunctionCall | None = None
 
+    @classmethod
+    def _from_template(
+        cls,
+        template: Template,
+        role: str,
+        name: str | None = None,
+        function_call: FunctionCall | None = None,
+        **kwargs,
+    ):
+        content = template.content.format(**kwargs)
+        return cls(
+            role=role,
+            name=name,
+            function_call=function_call,
+            content=content,
+        )
+
 
 class UserMessage(Message):
     role: str = "user"
 
+    @classmethod
+    def from_template(
+        cls,
+        template: Template,
+        name: str | None = None,
+        function_call: FunctionCall | None = None,
+        **kwargs,
+    ):
+        return cls._from_template(template, role="user", **kwargs)
+
 
 class SystemMessage(Message):
     role: str = "system"
+
+    @classmethod
+    def from_template(
+        cls,
+        template: Template,
+        name: str | None = None,
+        function_call: FunctionCall | None = None,
+        **kwargs,
+    ):
+        return cls._from_template(template, role="system", **kwargs)
 
 
 class Choice(BaseModel):

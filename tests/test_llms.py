@@ -3,7 +3,16 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from crias import llms
-from crias.llms import LLM, Completion, OpenAIChat, UserMessage, create_messages, get
+from crias.llms import (
+    LLM,
+    Completion,
+    OpenAIChat,
+    SystemMessage,
+    UserMessage,
+    create_messages,
+    get,
+)
+from crias.prompts import Template
 
 
 @pytest.fixture
@@ -101,3 +110,17 @@ def test_create_messages():
     assert len(messages) == 1
     assert messages[0]["content"] == "user message"
     assert messages[0]["role"] == "user"
+
+
+def test_user_message_from_template():
+    template = Template(content="This is a test message")
+    user_message = UserMessage.from_template(template)
+    assert user_message.role == "user"
+    assert user_message.content == "This is a test message"
+
+
+def test_system_message_from_template():
+    template = Template(content="This is a test message")
+    system_message = SystemMessage.from_template(template)
+    assert system_message.role == "system"
+    assert system_message.content == "This is a test message"
