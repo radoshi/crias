@@ -8,26 +8,6 @@ from pydantic import BaseModel
 
 class Template(BaseModel):
     content: str
-    # def message(self, role: str, **kwargs) -> dict[str, str]:
-    #     """Return a dictionary that is ready to fed into OpenAI ChatCompletion."""
-    #     content = self.content.format(**kwargs)
-    #     return {"content": content, "role": role}
-
-    # def user_message(self, **kwargs) -> dict[str, str]:
-    #     """Return a dictionary that is ready to fed into OpenAI ChatCompletion."""
-    #     return self.message(role="user", **kwargs)
-
-    # def system_message(self, **kwargs) -> dict[str, str]:
-    #     """Return a dictionary that is ready to fed into OpenAI ChatCompletion."""
-    #     return self.message(role="system", **kwargs)
-
-    # def save(self, filename: Union[str, Path] = "") -> None:
-    #     """Save the template to a file."""
-    #     if not filename and not self.name:
-    #         raise ValueError("Name must be provided to save the template.")
-    #     filename = Path(filename or f"{self.name}.json")
-    #     with open(filename, "w") as f:
-    #         f.write(self.json())
 
     def inputs(self) -> list[str]:
         """Return a list of field names in the contents."""
@@ -66,8 +46,8 @@ class TemplateLibrary(UserDict):
         for filename in dir.glob("**/*.json"):
             name = filename.parent / filename.stem
             bytes = filename.read_bytes()
-            library.add(name, Template.model_validate_json(bytes))
+            library.add(str(name), Template.model_validate_json(bytes))
         for filename in dir.glob("**/*.toml"):
             name = filename.parent / filename.stem
-            library.add(name, Template.parse_toml(filename))
+            library.add(str(name), Template.parse_toml(filename))
         return library
