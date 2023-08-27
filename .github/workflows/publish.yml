@@ -21,7 +21,7 @@ jobs:
         run: pip install poetry
 
       - name: Update Version in pyproject.toml
-        run: poetry version $(echo ${{ github.ref }} | sed -E 's/refs\/tags\/v//')
+        run: poetry version $(echo ${{ github.ref }} | sed -E 's/refs\/tags\///')
 
       - name: Commit pyproject.toml
         run: |
