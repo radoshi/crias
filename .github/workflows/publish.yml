@@ -1,0 +1,36 @@
+name: Publish Python package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Update Version in pyproject.toml
+        run: poetry version $(echo ${{ github.ref }} | sed -E 's/refs\/tags\/v//')
+
+      - name: Commit pyproject.toml
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Update version" pyproject.toml
+
+      - name: Create Git Tag
+        run: git tag ${{ github.ref }}
+
+      - name: Publish to PyPI
+        run: poetry publish --build -u __token__ -p ${{ secrets.PYPI_TOKEN }}
